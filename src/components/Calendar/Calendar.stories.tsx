@@ -18,3 +18,4 @@ export const Primary = Template.bind({});
 Primary.args = {
     value: new Date(),
 }
+
