@@ -16,6 +16,6 @@ const Template: ComponentStory<typeof Calendar> = (args: any) => <Calendar {...a
 export const Primary = Template.bind({});
 
 Primary.args = {
-    value: new Date(),
+    Date: new Date(),
 }
 
