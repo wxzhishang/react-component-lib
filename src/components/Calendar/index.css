@@ -28,3 +28,9 @@
     background-color: skyblue;
     cursor: pointer;
 }
+
+.day:hover,
+.selected {
+    background-color: skyblue;
+    cursor: pointer;
+}

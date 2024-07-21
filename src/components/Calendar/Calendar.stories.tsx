@@ -1,6 +1,6 @@
-import React from "react";
+import React, { forwardRef, useRef } from "react";
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Calendar } from "./Calendar";
+import { Calendar, CalendarRef } from "./Calendar";
 
 export default {
     title: '通用/Calendar 日历',
@@ -16,6 +16,6 @@ const Template: ComponentStory<typeof Calendar> = (args: any) => <Calendar {...a
 export const Primary = Template.bind({});
 
 Primary.args = {
-    Date: new Date(),
+    defaultValue: new Date(),
 }
 
