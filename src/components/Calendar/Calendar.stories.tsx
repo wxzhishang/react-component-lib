@@ -1,6 +1,8 @@
 import React, { forwardRef, useRef } from "react";
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Calendar, CalendarRef } from "./Calendar";
+import type { Dayjs } from 'dayjs';
+import dayjs, { locale } from "dayjs";
+import Calendar, { CalendarRef } from "./Calendar";
 
 export default {
     title: '通用/Calendar 日历',
@@ -16,6 +18,12 @@ const Template: ComponentStory<typeof Calendar> = (args: any) => <Calendar {...a
 export const Primary = Template.bind({});
 
 Primary.args = {
-    defaultValue: new Date(),
+    value: dayjs('2024-07-22'),
+    locale: 'en-US',
+    dateInnerContent: (value: Dayjs) => {
+        return <div>
+            <p style={{ background: 'transparent', height: '300px', color: 'yellowgreen' }}>{value.format('YYYY/MM/DD')}</p>
+        </div>
+    }
 }
 

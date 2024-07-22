@@ -1,10 +1,22 @@
-import React, { useImperativeHandle, useState } from "react";
-import './index.css'
+import React, { CSSProperties, ReactNode, useImperativeHandle, useState } from "react";
+import dayjs from "dayjs";
+import { Dayjs } from "dayjs";
+import cs from 'classnames';
+import './index.scss'
+import MonthCalendar from "./MonthCalendar";
+import Header from "./Header";
 import { useControllableValue } from "ahooks";
+import LocaleContext from "./LocaleContext";
 
 export interface CalendarProps {
-    defaultValue?: Date,
-    onChange?: (date: Date) => void;
+    value: Dayjs;
+    style?: CSSProperties;
+    curMonth: Dayjs;
+    className?: string | string[];
+    dateRender?: (currentDate: Dayjs) => ReactNode;
+    dateInnerContent?: (currentDate: Dayjs) => ReactNode;
+    locale?: string;//国际化
+    onChange?: (date: Dayjs) => void;
 }
 
 export interface CalendarRef {
@@ -12,74 +24,50 @@ export interface CalendarRef {
     setDate: (date: Date) => void
 }
 
-export const Calendar: React.ForwardRefRenderFunction<CalendarRef, CalendarProps> = (props, ref) => {
-    const { defaultValue = new Date(), onChange } = props;
+export default function Calendar(props: CalendarProps) {
+    const { value, style, className, locale, onChange } = props;
+    const [curValue, setCurValue] = useState<Dayjs>(value);
+    const [curMonth, setCurMonth] = useState<Dayjs>(value);
 
-    const [date, setDate] = useControllableValue(props, {
-        defaultValue: new Date()
-    });
+    const classNames = cs("calendar", className);
 
-    const handlePrevMonth = () => {
-        setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1));
+    function changeDate(date: Dayjs) {
+        setCurValue(date);
+        setCurMonth(date);
+        onChange?.(date);
     }
 
-    const handleNextMonth = () => {
-        setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1));
+
+    function selectHandler(date: Dayjs) {
+        changeDate(date);
     }
 
-    const monthName = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-
-    const daysOfMounth = (year: number, month: number) => {
-        return new Date(year, month + 1, 0).getDate();
+    function preMonthHandler() {
+        setCurMonth(curMonth.subtract(1, 'month'))
     }
 
-    const firstDayOfMonth = (year: number, month: number) => {
-        return new Date(year, month, 1).getDay();
+    function nextMonthHandler() {
+        setCurMonth(curMonth.add(1, 'month'))
     }
 
-    const renderDates = () => {
-        const days = [];
-
-        const daysCount = daysOfMounth(date.getFullYear(), date.getMonth());
-        const firstDay = firstDayOfMonth(date.getFullYear(), date.getMonth());
-
-        const clickHandler = (i: number) => {
-            const curDate = new Date(date.getFullYear(), date.getMonth(), i);
-            setDate(curDate);
-        }
-
-        for (let i = 0; i < firstDay; i++) {
-            days.push(<div key={`empty-${i}`} className="empty"></div>);
-        }
-
-        for (let i = 1; i <= daysCount; i++) {
-            if (i === date.getDate()) {
-                days.push(<div key={i} className="day selected" onClick={() => clickHandler(i)}>{i}</div>)
-            } else {
-                days.push(<div key={i} className="day" onClick={() => clickHandler(i)}>{i}</div>);
-            }
-        }
-
-        return days;
+    function todayHandler() {
+        const date = dayjs(Date.now());
+        changeDate(date);
     }
 
     return (
-        <div className="calendar">
-            <div className="header">
-                <button onClick={handlePrevMonth}>&lt;</button>
-                <div>{date.getFullYear()}年{monthName[date.getMonth()]}</div>
-                <button onClick={handleNextMonth}>&gt;</button>
+        <LocaleContext.Provider value={{
+            locale: locale || navigator.language
+        }}>
+            <div className={classNames} style={style}>
+                <Header
+                    curMonth={curMonth}
+                    prevMonthHandler={preMonthHandler}
+                    nextMonthHandler={nextMonthHandler}
+                    todayHandler={todayHandler}
+                />
+                <MonthCalendar {...props} value={curValue} curMonth={curMonth} selectHandler={selectHandler} />
             </div>
-            <div className="days">
-                <div className="day">日</div>
-                <div className="day">一</div>
-                <div className="day">二</div>
-                <div className="day">三</div>
-                <div className="day">四</div>
-                <div className="day">五</div>
-                <div className="day">六</div>
-                {renderDates()}
-            </div>
-        </div>
+        </LocaleContext.Provider>
     )
 }
