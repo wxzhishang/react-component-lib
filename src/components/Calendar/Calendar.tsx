@@ -61,6 +61,7 @@ export default function Calendar(props: CalendarProps) {
         }}>
             <div className={classNames} style={style}>
                 <Header
+                    value={dayjs(curValue).toDate()}
                     curMonth={curMonth}
                     prevMonthHandler={preMonthHandler}
                     nextMonthHandler={nextMonthHandler}
