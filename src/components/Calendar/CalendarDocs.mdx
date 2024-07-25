@@ -1,0 +1,42 @@
+{/* CalendarDocs.mdx */}
+
+import { Meta, Primary, Controls, Story } from '@storybook/blocks';
+import * as CalendarStories from './Calendar.stories';
+
+<Meta of={CalendarStories} />
+
+# Calendar
+
+A button is ...
+
+<Primary />
+
+## Props
+
+<Controls />
+
+## Stories
+
+### Primary
+
+默认情况下的Calendar
+
+<Story of={CalendarStories.Primary} />
+
+### Locale
+
+配置了国际化的Calendar
+
+<Story of={CalendarStories.En} />
+
+### Lunar
+
+配置了农历以及节气的Calendar
+
+<Story of={CalendarStories.Lunar} />
+
+### Fortune
+
+配置了神煞宜忌的Calendar
+
+<Story of={CalendarStories.Fortune} />

@@ -5,6 +5,7 @@ import type { Dayjs } from 'dayjs';
 import dayjs, { locale } from "dayjs";
 import Calendar, { CalendarRef } from "./Calendar";
 
+
 export default {
     title: '通用/Calendar 日历',
     component: Calendar,
@@ -17,26 +18,36 @@ export default {
 const Template: ComponentStory<typeof Calendar> = (args: any) => <Calendar {...args} />;
 
 export const Primary = Template.bind({});
+export const En = Template.bind({});
+export const Lunar = Template.bind({});
+export const Fortune = Template.bind({});
+export const Complete = Template.bind({});
 
-function getLunar(value: Date) {
-    if (lunisolar(value).solarTerm) {
-        return lunisolar(value).solarTerm?.toString();
-    } else {
-        return lunisolar(value).format('lD') === '初一' ? lunisolar(value).format('lM(lL)') : lunisolar(value).format('lD')
-    }
-}
+
 
 Primary.args = {
     value: dayjs(),
+}
+
+En.args = {
+    value: dayjs(),
+    locale: 'en-US',
+}
+
+Lunar.args = {
+    value: dayjs(),
+    isLunar: true
+}
+
+Fortune.args = {
+    value: dayjs(),
+    isFortune: true
+}
+
+Complete.args = {
+    value: dayjs(),
     // locale: 'en-US',
-    dateInnerContent: (value: Date) => {
-        return <div>
-            <p style={{ background: 'transparent', height: '300px' }}>
-                {
-                    getLunar(value)
-                }
-            </p>
-        </div>
-    }
+    isLunar: true,
+    isFortune: true,
 }
 

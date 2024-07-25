@@ -2,6 +2,7 @@ import React, { CSSProperties, ReactNode, useImperativeHandle, useState } from "
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
 import cs from 'classnames';
+import lunisolar from "lunisolar";
 import './index.scss'
 import MonthCalendar from "./MonthCalendar";
 import Header from "./Header";
@@ -17,6 +18,8 @@ export interface CalendarProps {
     dateInnerContent?: (currentDate: Dayjs) => ReactNode;
     locale?: string;//国际化
     onChange?: (date: Dayjs) => void;
+    isLunar?: boolean;
+    isFortune?: boolean;//是否显示运势
 }
 
 export interface CalendarRef {
@@ -25,7 +28,7 @@ export interface CalendarRef {
 }
 
 export default function Calendar(props: CalendarProps) {
-    const { value, style, className, locale, onChange } = props;
+    const { value, style, className, locale, onChange, isLunar, isFortune } = props;
     const [curValue, setCurValue] = useState<Dayjs>(value);
     const [curMonth, setCurMonth] = useState<Dayjs>(value);
 
@@ -55,6 +58,29 @@ export default function Calendar(props: CalendarProps) {
         changeDate(date);
     }
 
+    function getLunar(value: Date) {
+        if (lunisolar(value).solarTerm) {
+            return lunisolar(value).solarTerm?.toString();
+        } else {
+            return lunisolar(value).format('lD') === '初一' ? lunisolar(value).format('lM(lL)') : lunisolar(value).format('lD')
+        }
+    }
+
+    function dateInnerContent(value: Dayjs) {
+        if (isLunar) {
+            return <div>
+                <p style={{ background: 'transparent', height: '300px' }}>
+                    {
+                        getLunar(value as unknown as Date)
+                    }
+                </p>
+            </div>
+        } else {
+            return;
+        }
+
+    }
+
     return (
         <LocaleContext.Provider value={{
             locale: locale || navigator.language
@@ -66,8 +92,10 @@ export default function Calendar(props: CalendarProps) {
                     prevMonthHandler={preMonthHandler}
                     nextMonthHandler={nextMonthHandler}
                     todayHandler={todayHandler}
+                    isLunar={isLunar as boolean}
+                    isFortune={isFortune as boolean}
                 />
-                <MonthCalendar {...props} value={curValue} curMonth={curMonth} selectHandler={selectHandler} />
+                <MonthCalendar dateInnerContent={dateInnerContent} value={curValue} curMonth={curMonth} selectHandler={selectHandler} />
             </div>
         </LocaleContext.Provider>
     )

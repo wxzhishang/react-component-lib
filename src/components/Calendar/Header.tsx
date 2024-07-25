@@ -15,6 +15,8 @@ interface HeaderProps {
     prevMonthHandler: () => void;
     nextMonthHandler: () => void;
     todayHandler: () => void;
+    isLunar: boolean;
+    isFortune: boolean;
 }
 
 type EarthlyBranch = '子' | '丑' | '寅' | '卯' | '辰' | '巳' | '午' | '未' | '申' | '酉' | '戌' | '亥' | string;
@@ -41,7 +43,9 @@ function Header(props: HeaderProps) {
         curMonth,
         prevMonthHandler,
         nextMonthHandler,
-        todayHandler
+        todayHandler,
+        isLunar,
+        isFortune
     } = props;
 
     const localeContext = useContext(LocaleContext);
@@ -55,26 +59,29 @@ function Header(props: HeaderProps) {
             <div className="calendar-header-value">{curMonth.format(CalendarContext.formatMonth)}</div>
             <div className="calendar-header-icon" onClick={nextMonthHandler}>&gt;</div>
             <button className="calendar-header-btn" onClick={todayHandler}>{CalendarContext.today}</button>
-            <div className="calendar-header-value">{lunisolar(value).format('lM(lL)lD')}</div>
-            <div className="calendar-header-value-lunar">{lunisolar(value).char8.year.toString()}年 {zodiacByEarthlyBranch[lunisolar(value).char8.year.branch.toString()]}年 {lunisolar(value).char8.month.toString()}月 {lunisolar(value).char8.day.toString()}日</div>
-            <div className="calendar-header-act">
-                <div className="calendar-header-act-good">
-                    <div className="calendar-header-act-good-icon">宜</div>
-                    <div className="calendar-header-act-good-content">{
-                        (lsr.theGods.query('good act 3') as God[]).slice(0, 9).map((item: any) => {
-                            return `${item} `
-                        })
-                    }</div>
-                </div>
-                <div className="calendar-header-act-bad">
-                    <div className="calendar-header-act-bad-icon">忌</div>
-                    <div className="calendar-header-act-bad-content">{
-                        (lsr.theGods.query('bad act 3') as God[]).slice(0, 9).map((item: any) => {
-                            return `${item} `
-                        })
-                    }</div>
-                </div>
-            </div>
+            {
+                isFortune ? <><div className="calendar-header-value">{lunisolar(value).format('lM(lL)lD')}</div>
+                    <div className="calendar-header-value-lunar">{lunisolar(value).char8.year.toString()}年 {zodiacByEarthlyBranch[lunisolar(value).char8.year.branch.toString()]}年 {lunisolar(value).char8.month.toString()}月 {lunisolar(value).char8.day.toString()}日</div>
+                    <div className="calendar-header-act">
+                        <div className="calendar-header-act-good">
+                            <div className="calendar-header-act-good-icon">宜</div>
+                            <div className="calendar-header-act-good-content">{
+                                (lsr.theGods.query('good act 3') as God[]).slice(0, 9).map((item: any) => {
+                                    return `${item} `
+                                })
+                            }</div>
+                        </div>
+                        <div className="calendar-header-act-bad">
+                            <div className="calendar-header-act-bad-icon">忌</div>
+                            <div className="calendar-header-act-bad-content">{
+                                (lsr.theGods.query('bad act 3') as God[]).slice(0, 9).map((item: any) => {
+                                    return `${item} `
+                                })
+                            }</div>
+                        </div>
+                    </div></>
+                    : null
+            }
         </div>
     </div>
 }
